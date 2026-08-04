@@ -28,6 +28,11 @@ try:
 except LookupError:
     nltk.download('punkt')
 
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
+
 # 1. Define RNN Model Architecture (Matching training)
 class RNN(nn.Module):
     def __init__(self, input_size, hidden_size=128, num_layers=1):
@@ -98,7 +103,7 @@ def predict_sentiment(review_text: str):
     # Predict
     with torch.inference_mode():
         output = _artifacts.model(tensor_input)
-        prob = torch.sigmoid(output.squeeze()).item()
+        prob = torch.sigmoid(output.squeeze(dim=-1).squeeze(dim=-1)).item()
 
     is_positive = prob >= 0.5
     confidence = prob if is_positive else (1.0 - prob)
